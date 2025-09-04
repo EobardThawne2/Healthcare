@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lifesaver - Real-time Ambulance & Patient Tracking</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+    <style>
+        /* Enhanced Get Started Button Style */
+        .btn.get-started {
+            background: #dc3545;
+            color: #fff;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            box-shadow: 0 4px 16px rgba(220, 53, 69, 0.18);
+            letter-spacing: 0.5px;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            cursor: pointer;
+            outline: none;
+        }
+        .btn.get-started:hover, .btn.get-started:focus {
+            background: #c82333;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(220, 53, 69, 0.22);
+        }
+        .btn.get-started i {
+            color: #fff;
+            font-size: 1.3em;
+        }
+        .btn.get-started i {
+            font-size: 1.3em;
+        }
+        :root {
+            --primary: #dc3545;
+            --secondary: #102a43;
+            --accent: #f57f17;
+            --light-bg: #f8f9fa;
+            --dark-bg: #212529;
+            --text-dark: #333;
+            --text-light: #6c757d;
+            --white: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #f6f8fb;
+            font-family: Arial, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        .btn {
+            background: linear-gradient(90deg, #2175f3 60%, #159fd6 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* --- Reusable Styles --- */
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.8rem;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            width: 80%;
+            height: 4px;
+            background: var(--primary);
+            position: absolute;
+            bottom: -10px;
+            left: 10%;
+        }
+
+        .section-title p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: auto;
+            margin-top: 1.5rem;
+        }
+
+        /* --- Header --- */
+        .header {
+            background: var(--white);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            position: relative;
+            padding: 0.5rem 0;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s ease-out;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            width: 28px;
+            height: 3px;
+            background: var(--primary);
+            margin: 4px 0;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            padding: 160px 0 100px;
+            background: linear-gradient(135deg, var(--white), var(--light-bg));
+        }
+
+        .hero-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+        }
+
+        .cta-button {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: inline-block;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+            box-shadow: 0 8px 15px rgba(220, 53, 69, 0.2);
+        }
+
+        .cta-button:hover {
+            background: #c82333;
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        .hero-image img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            transition: transform 0.5s;
+        }
+
+        .hero-image:hover img {
+            transform: scale(1.02);
+        }
+
+        /* --- Features Section --- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            transition: transform 0.4s, box-shadow 0.4s;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: var(--white);
+            font-size: 2.2rem;
+            transition: background 0.3s;
+        }
+
+        .feature-card:hover .feature-icon {
+            background: var(--secondary);
+        }
+
+        .feature-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            margin-bottom: 0.8rem;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* --- Stats Section --- */
+        .stats {
+            background: var(--secondary);
+            color: var(--white);
+            text-align: center;
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-item h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* --- How It Works Section --- */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .step-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transition: transform 0.4s;
+        }
+
+        .step-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            transition: background 0.3s;
+        }
+
+        .step-card:hover .step-number {
+            background: var(--primary);
+        }
+
+        .step-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .step-card p {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* --- Testimonials Section --- */
+        .testimonials {
+            background: var(--white);
+            padding: 80px 0;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .test-card {
+            background: var(--light-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            font-style: italic;
+            transition: transform 0.4s;
+        }
+
+        .test-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .test-card p {
+            color: var(--text-dark);
+            font-size: 1.05rem;
+        }
+
+        .test-card span {
+            display: block;
+            margin-top: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            font-style: normal;
+        }
+
+        /* --- Team Section --- */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .team-card {
+            background: var(--white);
+            padding: 2rem;
+            text-align: center;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.4s, box-shadow 0.4s;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2.5rem;
+            color: var(--white);
+            transition: background 0.3s;
+        }
+
+        .team-card:hover .team-avatar {
+            background: var(--secondary);
+        }
+
+        .team-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+            margin-bottom: 0.3rem;
+        }
+
+        .team-card .role {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .team-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            width: 38px;
+            height: 38px;
+            background: #e9ecef;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        /* --- Footer & Contact --- */
+        .footer {
+            background: var(--dark-bg);
+            color: var(--white);
+            padding: 80px 0 40px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            font-family: 'Montserrat', sans-serif;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #b5c1cb;
+            text-decoration: none;
+            line-height: 1.8;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            background: #343a40;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            transition: background 0.3s;
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 4rem;
+            border-top: 1px solid #343a40;
+            padding-top: 2rem;
+            color: #9aa8b2;
+        }
+
+        /* Floating CTA */
+        .floating-cta {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent);
+            color: var(--white);
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .floating-cta:hover {
+            background: #e67514;
+            transform: scale(1.05);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                flex-direction: column;
+                background: var(--white);
+                width: 100%;
+                text-align: center;
+                padding: 2rem 0;
+                gap: 1.5rem;
+                transition: left 0.3s;
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+
+            .nav-links a {
+                font-size: 1.2rem;
+            }
+
+            .hero {
+                padding: 140px 0 60px;
+            }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero-text {
+                text-align: center;
+            }
+
+            .hero-image {
+                order: -1;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .section-title h2::after {
+                height: 3px;
+            }
+
+            .stats-grid,
+            .testimonials-grid,
+            .team-grid,
+            .steps-grid,
+            .features-grid,
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container container">
+            <div class="logo">
+                <i class="fas fa-ambulance"></i> Lifesaver
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#team">Our Team</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </header>
+    <section id="home" class="hero section">
+        <div class="hero-container container" data-aos="fade-up">
+            <div class="hero-text">
+                                <h1>Emergency Response, Made Smarter for Delhi NCR</h1>
+                                <p>Lifesaver is your real-time ambulance tracking system, built to save lives in Delhi NCR through precise GPS, instant communication, and coordinated care from call to hospital.</p>
+                                                <a href="{{ url_for('secondary') }}" target="_blank" style="text-decoration:none;">
+                                                    <button type="button" class="btn get-started"><i class="fas fa-play"></i> Get Started</button>
+                                                </a>
+            </div>
+            <div class="hero-image">
+                <img src="{{ url_for('static', filename='ap.jpg') }}" alt="Paramedics Team illustration" />
+                <img src="{{ url_for('static', filename='amb.webp') }}" alt="Ambulance" width="200" height="200" />
+            </div>
+        </div>
+    </section>
+    <section id="features" class="features section">
+        <div class="container" data-aos="fade-up">
+            <div class="section-title">
+                <h2>Key Features</h2>
+                <p>Advanced technology designed to improve emergency response and save lives.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="zoom-in">
+                    <div class="feature-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <h3>Real-Time GPS Tracking</h3>
+                    <p>Track ambulance locations with pinpoint accuracy for optimal route planning and ETA predictions.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="feature-icon"><i class="fas fa-heartbeat"></i></div>
+                    <h3>Patient Monitoring</h3>
+                    <p>Monitor vital signs and patient status in real-time during transport.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="feature-icon"><i class="fas fa-hospital"></i></div>
+                    <h3>Hospital Integration</h3>
+                    <p>Seamless handoff—hospitals receive patient data ahead of arrival.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="feature-icon"><i class="fas fa-globe"></i></div>
+                    <h3>Web-Based Platform</h3>
+                    <p>Access anywhere—desktop or mobile. No app install needed.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="400">
+                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Track performance, identify bottlenecks, and optimize your workflow.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="500">
+                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Secure & Reliable</h3>
+                    <p>HIPAA-compliant with 99.9% uptime for peace of mind.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="stats section" data-aos="fade-up">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item"><h3>47%</h3><p>Faster Response Time</p></div>
+                <div class="stat-item"><h3>99.9%</h3><p>System Uptime</p></div>
+                <div class="stat-item"><h3>24/7</h3><p>Live Monitoring</p></div>
+            </div>
+        </div>
+    </section>
+    <section id="how-it-works" class="how-it-works section">
+        <div class="container" data-aos="fade-up">
+            <div class="section-title">
+                <h2>How It Works</h2>
+                <p>A simple four-step process for a faster and more reliable emergency response in Delhi NCR.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card" data-aos="fade-up"><div class="step-number">1</div><h3>Emergency Call</h3><p>An emergency call is received and logged with location and severity details instantly.</p></div>
+                <div class="step-card" data-aos="fade-up" data-aos-delay="100"><div class="step-number">2</div><h3>Ambulance Dispatch</h3><p>The nearest available ambulance is dispatched with a live, optimal route map.</p></div>
+                <div class="step-card" data-aos="fade-up" data-aos-delay="200"><div class="step-number">3</div><h3>Real-Time Tracking</h3><p>Paramedics and hospital staff monitor live ambulance location and patient vitals.</p></div>
+                <div class="step-card" data-aos="fade-up" data-aos-delay="300"><div class="step-number">4</div><h3>Hospital Prep</h3><p>The emergency team at the hospital is ready with patient data before arrival.</p></div>
+            </div>
+        </div>
+    </section>
+    <section id="testimonials" class="testimonials section">
+        <div class="container" data-aos="fade-up">
+            <div class="section-title">
+                <h2>Real Stories, Real Impact</h2>
+                <p>Insights from the emergency responders in Delhi who rely on Lifesaver to save lives every day.</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="test-card" data-aos="fade-up"><p>“Response time dropped dramatically—I arrived 3 minutes faster on average.”</p><span>— Krati Rustagi, Patient</span></div>
+                <div class="test-card" data-aos="fade-up" data-aos-delay="100"><p>“Monitoring vitals mid-transport saved multiple lives. Lifesaver is now a critical tool for us.”</p><span>— Piyush Chauhan, Brother of a Patient</span></div>
+                <div class="test-card" data-aos="fade-up" data-aos-delay="200"><p>“Seamless route tracking and data coordination across all units. It’s a game-changer.”</p><span>— Paarth Sharma, Father of Patient</span></div>
+            </div>
+        </div>
+    </section>
+    <section id="team" class="team section">
+        <div class="container" data-aos="fade-up">
+            <div class="section-title">
+                <h2>Meet Our Team</h2>
+                <p>Passionate innovators from Delhi NCR powering emergency healthcare with technology.</p>
+            </div>
+            <div class="team-grid">
+                <div class="team-card" data-aos="fade-up"><div class="team-avatar">👨‍💻</div><h3>Ayush Mittal</h3><div class="role">Team Leader & Data Analyst</div><p> Expert in real-time data streams & system reliability. </p><div class="social-links"><a href="https://www.linkedin.com/in/ayush-mittal-065424211/" target="_blank"><i class="fab fa-linkedin"></i></a><a href="https://github.com/ayumi247" target="_blank"><i class="fab fa-github"></i></a></div></div>
+                <div class="team-card" data-aos="fade-up" data-aos-delay="100"><div class="team-avatar">👨‍🔧</div><h3>Satyam Raj Darshan</h3><div class="role">Team Member & Full‑Stack Dev</div><p> Designing user-friendly and accessible interfaces. </p><div class="social-links"><a href="https://www.linkedin.com/in/satyam-raj-darshan-2772b7380/" target="_blank"><i class="fab fa-linkedin"></i></a><a href="https://github.com/light-srd" target="_blank"><i class="fab fa-github"></i></a></div></div>
+                <div class="team-card" data-aos="fade-up" data-aos-delay="200"><div class="team-avatar">💻</div><h3>Sumeer Khattar</h3><div class="role">Team Member & Software Developer</div><p>Architecting scalable solutions to save lives.</p><div class="social-links"><a href="https://www.linkedin.com/in/sumeer-Khattar-54118132a/" target="_blank"><i class="fab fa-linkedin"></i></a><a href="https://github.com/SumeerKhattar" target="_blank"><i class="fab fa-github"></i></a></div></div>
+                <div class="team-card" data-aos="fade-up" data-aos-delay="300"><div class="team-avatar">👨‍🔬</div><h3>Vansh Rawat</h3><div class="role">Team Member & AI Specialist</div><p>Developing predictive routing and analytical insights.</p><div class="social-links"><a href="https://www.linkedin.com/in/vansh-rawat-69225a2a7/" target="_blank"><i class="fab fa-linkedin"></i></a><a href="https://github.com/VANSHxGIT" target="_blank"><i class="fab fa-github"></i></a></div></div>
+            </div>
+            <div>  <div class="section-title">
+                <h2>🚑 Our Goal</h2>
+              <br>
+              <br>
+              <p>
+                <i>We aim to simplify and improve the tracking of ambulances and patients for families, relatives, or any authorized users. Our system monitors patient progress across different stages and locates nearby hospitals with available beds. This not only enhances emergency response but also boosts the efficiency and transparency of medical care. </i>
+              </p>
+        </div>
+    </section>
+    <footer id="contact" class="footer section">
+        <div class="footer-content container" data-aos="fade-up">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-envelope"></i> thebytesnew@gmail.com</p>
+                <p><i class="fab fa-instagram"></i> <a href="https://www.instagram.com/thebytesnew" target="_blank" style="color:inherit;text-decoration:none;">@thebytesnew</a></p>
+                <p><i class="fas fa-phone"></i> +91 98717 22204</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <p><a href="#features">Features</a></p>
+                <p><a href="#how-it-works">How It Works</a></p>
+                <p><a href="#testimonials">Testimonials</a></p>
+                <p><a href="#team">Our Team</a></p>
+                <p><a href="#contact">Contact</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>Technology</h3>
+                <p>Real-Time GPS</p>
+                <p>Cloud Infrastructure</p>
+                <p>Responsive Web</p>
+                <p>Data Analytics</p>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <p>24/7 Technical Support</p>
+                <p>Documentation</p>
+                <p>Training Resources</p>
+                <p>API Access & Docs</p>
+            </div>
+        </div>
+        <div class="footer-bottom container">&copy; 2025 The Bytes Team. All rights reserved.</div>
+    </footer>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+        // Hamburger toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        document.querySelectorAll('.nav-links a').forEach((link) => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

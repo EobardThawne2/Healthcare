@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Find Nearest Hospital</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #e3ecfa 0%, #f6f8fb 100%);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      max-width: 420px;
+      margin: 48px auto;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 10px 36px rgba(33,117,243,0.13), 0 2px 8px rgba(21,159,214,0.10);
+      padding: 48px 36px 36px 36px;
+      border-top: 8px solid #e74c3c;
+      border-bottom: 4px solid #159fd6;
+      position: relative;
+      transition: box-shadow 0.2s;
+    }
+    .container:before {
+      content: "";
+      position: absolute;
+      top: -36px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 72px;
+      height: 72px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 12px rgba(33,117,243,0.10);
+      z-index: 2;
+      border: 3px solid #e3ecfa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .medical-cross {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 48px;
+      height: 48px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .medical-cross svg {
+      width: 48px;
+      height: 48px;
+      display: block;
+    }
+    h2 {
+      text-align: center;
+      color: #e74c3c;
+      margin-bottom: 30px;
+      font-size: 2.1rem;
+      letter-spacing: 1px;
+      font-weight: 800;
+      text-shadow: 0 2px 8px #f6f8fb;
+    }
+    label {
+      font-weight: 700;
+      display: block;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      color: #1a355b;
+      letter-spacing: 0.5px;
+    }
+    input, button {
+      width: 100%;
+      padding: 13px 15px;
+      margin-bottom: 12px;
+      border-radius: 9px;
+      border: 1.7px solid #dbeafe;
+      box-sizing: border-box;
+      font-size: 1.05rem;
+      background: #f8fbff;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    input:focus {
+      border: 1.7px solid #e74c3c;
+      outline: none;
+      background: #f0f6ff;
+      box-shadow: 0 0 0 2px #fbeaea;
+    }
+    button {
+      background: linear-gradient(90deg, #e74c3c 60%, #159fd6 100%);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      margin-top: 12px;
+      box-shadow: 0 2px 8px rgba(33,117,243,0.08);
+      transition: background 0.2s, box-shadow 0.2s;
+      font-size: 1.08rem;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 2px #b6e0fe;
+    }
+    button:hover, button:focus {
+      background: linear-gradient(90deg, #159fd6 60%, #e74c3c 100%);
+      box-shadow: 0 4px 16px rgba(33,117,243,0.13);
+    }
+    .info {
+      background: #e8f6ff;
+      padding: 18px 16px;
+      border-radius: 12px;
+      margin-top: 28px;
+      font-size: 1.08rem;
+      border: 2.5px solid #b6e0fe;
+      box-shadow: 0 1px 4px rgba(33,117,243,0.04);
+      transition: border 0.2s, background 0.2s;
+      word-break: break-word;
+      position: relative;
+    }
+    .critical {
+      background: #ffeaea !important;
+      border: 2.5px solid #e74c3c;
+      color: #e74c3c;
+    }
+    .high {
+      background: #fff8e6 !important;
+      border: 2.5px solid #ffa500;
+      color: #ffa500;
+    }
+    .normal {
+      background: #e8f6ff !important;
+      border: 2.5px solid #2175f3;
+      color: #2175f3;
+    }
+    .info b.warning {
+      color: #e74c3c;
+      font-weight: 800;
+      font-size: 1.08em;
+      letter-spacing: 0.5px;
+    }
+    .info b.notice {
+      color: #ffa500;
+      font-weight: 800;
+      font-size: 1.08em;
+      letter-spacing: 0.5px;
+    }
+    .info a {
+      color: #e74c3c;
+      text-decoration: underline;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+    .info a:hover {
+      color: #159fd6;
+    }
+    .vitals-row {
+      display: flex;
+      gap: 10px;
+    }
+    .vitals-row input {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    @media (max-width: 500px) {
+      .container {
+        padding: 22px 6px 14px 6px;
+      }
+      h2 {
+        font-size: 1.2rem;
+      }
+      .info {
+        font-size: 0.98rem;
+      }
+      .container:before {
+        width: 54px;
+        height: 54px;
+        top: -28px;
+      }
+      .medical-cross {
+        width: 36px;
+        height: 36px;
+        top: -10px;
+      }
+    }
+  </style>
+  <script>
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          document.getElementById("lat").value = position.coords.latitude;
+          document.getElementById("lng").value = position.coords.longitude;
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="medical-cross">
+      <svg viewBox="0 0 48 48" fill="none">
+        <rect x="20" y="6" width="8" height="36" rx="3" fill="#e74c3c"/>
+        <rect x="6" y="20" width="36" height="8" rx="3" fill="#e74c3c"/>
+        <rect x="20" y="6" width="8" height="36" rx="3" stroke="#fff" stroke-width="2"/>
+        <rect x="6" y="20" width="36" height="8" rx="3" stroke="#fff" stroke-width="2"/>
+      </svg>
+    </div>
+    <h2>Find Nearest Hospital</h2>
+    <form id="hospitalForm" method="get" action="/get-directions" onsubmit="return submitForm(event)">
+      <label for="lat">Latitude:</label>
+      <input type="text" id="lat" name="lat" required placeholder="e.g. 37.7749">
+
+      <label for="lng">Longitude:</label>
+      <input type="text" id="lng" name="lng" required placeholder="e.g. -122.4194">
+
+      <button type="button" onclick="getLocation()">&#128205; Use My Current Location</button>
+
+      <label for="injuries">Type of Injury:</label>
+      <input type="text" id="injuries" name="injuries" placeholder="e.g. trauma, cardiac, orthopedic, neuro">
+
+      <div class="vitals-row">
+        <div style="flex:1">
+          <label for="bp">Blood Pressure (BP):</label>
+          <input type="text" id="bp" name="bp" placeholder="e.g. 120/80">
+        </div>
+        <div style="flex:1">
+          <label for="pulse">Pulse:</label>
+          <input type="text" id="pulse" name="pulse" placeholder="e.g. 80">
+        </div>
+      </div>
+
+      <label for="injury_location">Location of Injury (Body Part):</label>
+      <input type="text" id="injury_location" name="injury_location" placeholder="e.g. head, leg, chest">
+
+      <button type="submit">&#9877; Find Hospital</button>
+    </form>
+    <div class="info" id="hospitalInfo" style="display:none"></div>
+  </div>
+  <script>
+    function submitForm(event) {
+      event.preventDefault();
+      const lat = document.getElementById("lat").value;
+      const lng = document.getElementById("lng").value;
+      const injuries = document.getElementById("injuries").value;
+      const bp = document.getElementById("bp").value;
+      const pulse = document.getElementById("pulse") ? document.getElementById("pulse").value : "";
+      const injury_location = document.getElementById("injury_location").value;
+      const params = `lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}&injuries=${encodeURIComponent(injuries)}&bp=${encodeURIComponent(bp)}&pulse=${encodeURIComponent(pulse)}&injury_location=${encodeURIComponent(injury_location)}`;
+      fetch("/get-directions?" + params)
+        .then(res => res.json())
+        .then(data => {
+          const info = document.getElementById("hospitalInfo");
+          info.className = "info normal";
+          info.style.display = "block";
+          let severityMsg = "";
+          if(data.severity === "critical") {
+            info.className = "info critical";
+            severityMsg = `<b class="warning">&#9888; Medical Severity: CRITICAL – immediate action required!</b>`;
+          } else if(data.severity === "high") {
+            info.className = "info high";
+            severityMsg = `<b class="notice">&#9888; Medical Severity: High risk.</b>`;
+          } else {
+            severityMsg = `<b>Medical Severity:</b> Normal / Stable`;
+          }
+          if(data.error) {
+            info.innerHTML = "<b>Error:</b> " + data.error;
+            return;
+          }
+          info.innerHTML = `<b>Nearest Hospital:</b> ${data.hospital}<br>
+            <b>Specialization Chosen:</b> ${data.selected_specialization}<br>
+            <b>BP:</b> ${data.bp || "N/A"}<br>
+            <b>Pulse:</b> ${data.pulse || "N/A"}<br>
+            <b>Injury Type:</b> ${data.injury || "N/A"}<br>
+            <b>Injury Location:</b> ${data.injury_location || "N/A"}<br>
+            ${severityMsg}<br>
+            <a href="${data.maps_url}" target="_blank">&#128205; Open Directions in Google Maps</a>`;
+        });
+      return false;
+    }
+  </script>
+</body>
+</html>
